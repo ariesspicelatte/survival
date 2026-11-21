@@ -48,6 +48,17 @@ body.red .hero{filter:grayscale(1) sepia(1) hue-rotate(-50deg) saturate(3) brigh
 body.big{font-size:20px}body.big .m,body.big .chip,body.big .tb button{font-size:16px}
 #pv{display:none}
 @media print{body.pr>*:not(#pv){display:none!important}body.pr #pv{display:block}body.pr,body.pr.red{--bg:#fff;--card:#fff;--tx:#000;--mu:#444;--bd:#999;--ac2:#eee;background:#fff;color:#000}.pi{break-inside:avoid;margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid #999}.pi h2{margin:0 0 4px}}
+
+:root{--sc:#d3dcc4;--sc2:#bccaa6;--sc3:#eef2e4}
+@media(prefers-color-scheme:dark){:root{--sc:#262f20;--sc2:#364529;--sc3:#51663f}}
+body.red{--sc:#2a0000;--sc2:#3c0000;--sc3:#6a1a1a}
+.scene{text-align:center;margin:6px 0 18px}.scene svg{width:100%;max-width:420px;height:auto}
+.scene .sc{fill:var(--sc)}.scene .sd{fill:var(--sc2)}.scene .sl{fill:var(--sc3)}
+.scene .as{fill:none;stroke:var(--sc2);stroke-linecap:round;stroke-linejoin:round}
+.flame{transform-box:fill-box;transform-origin:50% 100%;animation:fl .9s ease-in-out infinite alternate}
+.flame.i{animation-duration:.65s}
+@keyframes fl{0%{transform:scale(1,1) skewX(0deg)}50%{transform:scale(.92,1.12) skewX(3deg)}100%{transform:scale(1.04,.94) skewX(-3deg)}}
+@media(prefers-reduced-motion:reduce){.flame{animation:none}}
 .chip.s{font-size:13px;padding:3px 10px}
 .it{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:12px;margin:8px 0}
 .it h3{margin:0 0 4px;font-size:17px;display:flex;justify-content:space-between;gap:8px}
@@ -77,6 +88,26 @@ body.big{font-size:20px}body.big .m,body.big .chip,body.big .tb button{font-size
 <div class="bk" id="bk"></div>
 <div class="mp" id="mp"><button id="ex">⬇ Exportar</button><button id="im">⬆ Importar</button><button id="mc">🛒 Compra</button><button id="mk">🧮 Calculadora</button><button id="mi">🖨 Imprimir lista</button><button id="ml">🔴 Luz roja</button><button id="mz">🔠 Texto grande</button></div>
 <input id="q" type="search" placeholder="Buscar en títulos, notas, listas y etiquetas…">
+<div class="r"><button id="hm" style="flex:1"></button></div>
+<div class="scene" id="scene">
+<svg viewBox="0 0 300 160" role="img" aria-label="Tienda de campaña, hoguera y una persona asando un malvavisco">
+<path class="sc" d="M0 140H300V160H0Z"/>
+<path class="sc" d="M20 140L88 56L156 140Z"/>
+<path class="sd" d="M74 140L88 102L102 140Z"/>
+<path class="sd flame" d="M185 139C170 139 167 125 175 113C179 107 182 101 183 90C190 98 201 109 201 123C201 133 195 139 185 139Z"/>
+<path class="sl flame i" d="M185 139C177 139 175 131 180 123C182 119 184 116 185 111C189 117 194 123 194 129C194 135 190 139 185 139Z"/>
+<rect class="sd" x="167" y="134" width="36" height="6" rx="3" transform="rotate(-12 185 137)"/>
+<rect class="sd" x="167" y="134" width="36" height="6" rx="3" transform="rotate(12 185 137)"/>
+<rect class="sd" x="232" y="128" width="48" height="12" rx="6"/>
+<circle class="sd" cx="243" cy="93" r="7"/>
+<rect class="sd" x="238" y="101" width="12" height="24" rx="5"/>
+<rect class="sd" x="224" y="116" width="26" height="9" rx="4.5"/>
+<rect class="sd" x="222" y="116" width="9" height="24" rx="4.5"/>
+<path class="as" d="M243 108L229 109L225 111" stroke-width="4.5"/>
+<path class="as" d="M226 111L196 115" stroke-width="2"/>
+<rect class="sl" x="195" y="111" width="9" height="7" rx="3"/>
+</svg>
+<p class="m" id="sct"></p></div>
 <div class="r"><select id="so">
 <option value="rec">Más recientes</option>
 <option value="az">A → Z</option>
@@ -88,6 +119,7 @@ body.big{font-size:20px}body.big .m,body.big .chip,body.big .tb button{font-size
 <div class="chips" id="ch"></div>
 <div class="chips" id="sch"></div>
 <div id="ls"></div>
+<div class="r" id="hmb"><button id="hm2" style="flex:1">← Volver al inicio</button></div>
 <input type="file" id="fi" accept=".json" hidden>
 <p class="m" id="st"></p>
 <button class="p f" id="nw">+ Nueva</button>
@@ -144,6 +176,7 @@ if(cat==="📚 Guías")L=Object.keys(SRC).map(function(k){return[k,SRC[k]]});
 else if(TREE[cat])L=TREE[cat].map(function(x){return[x,x]});
 $("sch").innerHTML=L.length?[["","Todas"]].concat(L).map(function(q){return mk(q[0],q[0]===sub,1,q[1])}).join(""):""}
 function render(){
+if(homeView())return;
 var q=norm($("q").value.trim()),so=$("so").value;
 var l=data.filter(function(e){
 if(cat==="★ Favoritos"&&!e.fav)return false;
@@ -221,7 +254,17 @@ else if(c==="row"||c==="col"||c==="delt")tbl(c);
 else x(c)};
 $("bd").onkeyup=function(ev){if(ev.key!=="Enter")return;var n=getSelection().anchorNode,li=n&&(n.nodeType===1?n:n.parentNode).closest("li");
 if(li&&li.parentNode.classList.contains("todo")&&!li.querySelector("input")){var i=document.createElement("input");i.type="checkbox";li.insertBefore(i,li.firstChild)}};
-var cur=[],VER="5";
+var cur=[],VER="7",browse=false;
+function homeView(){var h=!$("q").value.trim()&&cat==="Todas"&&!browse;
+$("scene").style.display=h?"block":"none";
+$("ls").style.display=$("ch").style.display=$("sch").style.display=h?"none":"";
+$("so").parentNode.style.display=h?"none":"";$("hmb").style.display=h?"none":"";
+$("hm").textContent=h?"☰ Explorar por categorías":"← Volver al inicio";
+$("sct").textContent=data.length?"Escribe arriba para buscar entre tus "+data.length+" entradas":"Pulsa «+ Nueva» para crear tu primera entrada";
+$("st").textContent=data.length+" entradas · guardadas en este dispositivo · versión "+VER;
+if(h)cur=data;return h}
+$("hm2").onclick=function(){browse=false;cat="Todas";sub="";$("q").value="";chips();render();window.scrollTo(0,0)};
+$("hm").onclick=function(){if(homeView())browse=true;else{browse=false;cat="Todas";sub="";$("q").value=""}chips();render()};
 function lsGet(k){try{return localStorage.getItem(k)}catch(x){return null}}
 function lsSet(k,v){try{localStorage.setItem(k,v)}catch(x){}}
 function isLow(e){return e.qty!==undefined&&e.qty!==""&&e.min!==undefined&&e.min!==""&&+e.qty<+e.min}
