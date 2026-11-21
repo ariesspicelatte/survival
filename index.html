@@ -29,6 +29,10 @@ label.l{display:block;font-size:13px;color:var(--mu);margin-top:10px}
 .chips{display:flex;gap:6px;overflow-x:auto;padding:4px 0 8px}
 .chip{white-space:nowrap;border-radius:99px;padding:5px 12px;font-size:14px}
 .chip.on{background:var(--ac);color:#fff;border-color:var(--ac)}
+.hero{position:relative;min-height:150px;margin-bottom:12px;padding:14px;border-radius:14px;display:flex;align-items:flex-end;color:#fff;background:linear-gradient(#0002,#000b),url(banner.jpg) center/cover,var(--ac)}
+.hero h1{margin:0;text-shadow:0 1px 4px #000a}
+.mn{position:absolute;top:10px;right:10px;width:auto;padding:6px 11px;border:none;border-radius:99px;background:#0007;color:#fff;font-size:18px}
+.mp{display:none;gap:8px;margin-bottom:10px}.mp.on{display:flex}.mp button{flex:1}
 .chip.s{font-size:13px;padding:3px 10px}
 .it{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:12px;margin:8px 0}
 .it h3{margin:0 0 4px;font-size:17px;display:flex;justify-content:space-between;gap:8px}
@@ -54,7 +58,8 @@ label.l{display:block;font-size:13px;color:var(--mu);margin-top:10px}
 </head>
 <body>
 <div class="w" id="lst">
-<h1>🏕️ Base de Supervivencia</h1>
+<div class="hero"><button id="mn" class="mn" aria-label="Menú">⚙</button><h1>🏕️ Base de Supervivencia</h1></div>
+<div class="mp" id="mp"><button id="ex">⬇ Exportar copia</button><button id="im">⬆ Importar copia</button></div>
 <input id="q" type="search" placeholder="Buscar en títulos, notas, listas y etiquetas…">
 <div class="r"><select id="so">
 <option value="rec">Más recientes</option>
@@ -66,11 +71,7 @@ label.l{display:block;font-size:13px;color:var(--mu);margin-top:10px}
 <div class="chips" id="ch"></div>
 <div class="chips" id="sch"></div>
 <div id="ls"></div>
-<div class="r" style="margin-top:20px">
-<button id="ex">⬇ Exportar copia</button>
-<button id="im">⬆ Importar copia</button>
 <input type="file" id="fi" accept=".json" hidden>
-</div>
 <p class="m" id="st"></p>
 <button class="p f" id="nw">+ Nueva</button>
 </div>
@@ -217,6 +218,7 @@ if(up)old.forEach(function(e){var x=ids[e.id];x.cat=e.cat;x.sub=e.sub||"";x.src=
 chips();render();alert("Nuevas: "+add.length+(up?" · Actualizadas: "+old.length:""))}
 catch(x){alert("Archivo no válido.")}};r.readAsText(f);this.value=""};
 
+$("mn").onclick=function(){$("mp").classList.toggle("on")};
 if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").catch(function(){});
 chips();idb(render);
 </script>
