@@ -33,6 +33,15 @@ label.l{display:block;font-size:13px;color:var(--mu);margin-top:10px}
 .hero h1{margin:0;text-shadow:0 1px 4px #000a}
 .mn{position:absolute;top:10px;right:10px;width:auto;padding:6px 11px;border:none;border-radius:99px;background:#0007;color:#fff;font-size:18px}
 .mp{display:none;gap:8px;margin-bottom:10px}.mp.on{display:flex}.mp button{flex:1}
+.rt{line-height:1.5}.rt ul,.rt ol{margin:6px 0;padding-left:22px}.rt h3{margin:10px 0 4px;font-size:17px}
+.rt ul.todo{list-style:none;padding-left:2px}.rt ul.todo li{position:relative;padding-left:28px;list-style:none}
+.rt ul.todo input{position:absolute;left:2px;top:3px;width:20px;height:20px}
+.rt ul.todo li:has(input:checked){color:var(--mu);text-decoration:line-through}
+.rt table{border-collapse:collapse;margin:8px 0;max-width:100%;display:block;overflow-x:auto}
+.rt td,.rt th{border:1px solid var(--bd);padding:5px 8px;min-width:60px;vertical-align:top;text-align:left}.rt th{background:var(--ac2)}
+.ed{min-height:180px;border:1px solid var(--bd);border-radius:8px;padding:10px;background:var(--card);outline:none}
+.tb{display:flex;gap:6px;overflow-x:auto;padding:6px 0;position:sticky;top:env(safe-area-inset-top,0px);background:var(--bg);z-index:5}
+.tb button{white-space:nowrap;padding:6px 10px;font-size:14px}
 .chip.s{font-size:13px;padding:3px 10px}
 .it{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:12px;margin:8px 0}
 .it h3{margin:0 0 4px;font-size:17px;display:flex;justify-content:space-between;gap:8px}
@@ -81,8 +90,9 @@ label.l{display:block;font-size:13px;color:var(--mu);margin-top:10px}
 <input id="t" placeholder="Título (ej. Botiquín de mochila)">
 <label class="l">Categoría</label><select id="c"></select><select id="sc" style="margin-top:6px"></select>
 <label class="l">Etiquetas (separadas por comas)</label><input id="g">
-<label class="l">Notas</label><textarea id="b"></textarea>
-<label class="l">Lista de comprobación (un elemento por línea)</label><textarea id="k" style="min-height:90px"></textarea>
+<label class="l">Contenido</label>
+<div class="tb" id="tb"><button data-c="bold"><b>B</b></button><button data-c="italic"><i>I</i></button><button data-c="underline"><u>U</u></button><button data-c="strikeThrough"><s>S</s></button><button data-c="h">Título</button><button data-c="insertUnorderedList">• Lista</button><button data-c="insertOrderedList">1. Lista</button><button data-c="todo">☑ Tareas</button><button data-c="table">▦ Tabla</button><button data-c="row">+ Fila</button><button data-c="col">+ Col.</button><button data-c="delt">✕ Tabla</button><button data-c="removeFormat">Limpiar</button></div>
+<div id="bd" class="rt ed" contenteditable="true"></div>
 <label class="l">Fecha de caducidad (opcional)</label><input id="x" type="date">
 <label class="l">Fotos</label>
 <div class="ph" id="pe"></div>
@@ -140,11 +150,11 @@ return b.u-a.u});
 $("ls").innerHTML=l.length?l.map(function(e){
 var d=days(e.x),ex="";
 if(d!==null)ex=' · <span class="ex'+(d<0?' bad':'')+'">'+(d<0?'⚠ Caducada hace '+(-d)+' d':d===0?'⏰ Caduca hoy':'⏰ Caduca en '+d+' d')+'</span>';
-var k=(e.k||[]),done=k.filter(function(i){return i.d}).length;
+var k=(e.k||[]),done=k.filter(function(i){return i.d}).length,tt=k.length,dd=done;if(e.h){tt+=(e.h.match(/<input/g)||[]).length;dd+=(e.h.match(/<input[^>]*checked/g)||[]).length}
 return '<div class="it" data-id="'+e.id+'"><h3><span>'+esc(e.t)+'</span><span>'+(e.fav?'★':'')+'</span></h3>'+
-'<div class="m">'+esc(kc(e))+(e.sub?" › "+esc(e.sub):"")+(e.src?" · 📚 "+esc(SRC[e.src]||e.src):"")+ex+(k.length?' · ✔ '+done+'/'+k.length:'')+(e.p&&e.p.length?' · 📷 '+e.p.length:'')+'</div>'+
+'<div class="m">'+esc(kc(e))+(e.sub?" › "+esc(e.sub):"")+(e.src?" · 📚 "+esc(SRC[e.src]||e.src):"")+ex+(tt?' · ✔ '+dd+'/'+tt:'')+(e.p&&e.p.length?' · 📷 '+e.p.length:'')+'</div>'+
 e.g.map(function(t){return '<span class="tg">'+esc(t)+'</span>'}).join("")+
-'<div class="dt">'+(e.b?'<div class="bd">'+esc(e.b)+'</div>':'')+
+'<div class="dt">'+(e.h?'<div class="rt">'+clean(e.h)+'</div>':(e.b?'<div class="bd">'+esc(e.b)+'</div>':''))+
 k.map(function(i,n){return '<label class="ck'+(i.d?' dn':'')+'"><input type="checkbox" data-n="'+n+'"'+(i.d?' checked':'')+'><span>'+esc(i.t)+'</span></label>'}).join("")+
 (e.p&&e.p.length?'<div class="ph">'+e.p.map(function(s){return '<img src="'+s+'">'}).join("")+'</div>':'')+
 '<div class="ac"><button data-a="f">'+(e.fav?'Quitar ★':'★ Favorito')+'</button><button data-a="e">Editar</button><button class="d" data-a="x">Borrar</button></div></div></div>'}).join(""):
@@ -158,8 +168,7 @@ function openEd(id){
 editId=id;var e=id?get(id):null;
 $("et").textContent=e?"Editar entrada":"Nueva entrada";
 $("t").value=e?e.t:"";$("c").value=e?kc(e):(CATS.indexOf(cat)>-1?cat:CATS[0]);fillSub($("c").value,e?e.sub:(CATS.indexOf(cat)>-1?sub:""));
-$("g").value=e?e.g.join(", "):"";$("b").value=e?e.b:"";
-$("k").value=e&&e.k?e.k.map(function(i){return i.t}).join("\n"):"";
+$("g").value=e?e.g.join(", "):"";$("bd").innerHTML=e?(e.h?clean(e.h):toHtml(e)):"";
 $("x").value=e&&e.x?e.x:"";photos=e&&e.p?e.p.slice():[];drawPh();show(true)}
 function resize(file,cb){
 var r=new FileReader();r.onload=function(){var im=new Image();im.onload=function(){
@@ -167,6 +176,35 @@ var m=1000,s=Math.min(1,m/Math.max(im.width,im.height)),c=document.createElement
 c.width=im.width*s;c.height=im.height*s;c.getContext("2d").drawImage(im,0,0,c.width,c.height);
 cb(c.toDataURL("image/jpeg",0.8))};im.src=r.result};r.readAsDataURL(file)}
 
+var OK={B:1,STRONG:1,I:1,EM:1,U:1,S:1,STRIKE:1,H3:1,P:1,DIV:1,BR:1,UL:1,OL:1,LI:1,TABLE:1,THEAD:1,TBODY:1,TR:1,TD:1,TH:1,INPUT:1,SPAN:1};
+function clean(h){var d=new DOMParser().parseFromString("<body>"+(h||"")+"</body>","text/html").body;
+(function w(n){Array.prototype.slice.call(n.childNodes).forEach(function(c){
+if(c.nodeType===3)return;if(c.nodeType!==1){c.remove();return}
+if(/^(SCRIPT|STYLE|IFRAME|OBJECT|EMBED|LINK|META)$/.test(c.tagName)){c.remove();return}
+w(c);
+if(!OK[c.tagName]){while(c.firstChild)n.insertBefore(c.firstChild,c);c.remove();return}
+var todo=c.tagName==="UL"&&c.classList.contains("todo"),inp=c.tagName==="INPUT",ok=inp&&c.type==="checkbox",chk=ok&&c.hasAttribute("checked");
+if(inp&&!ok){c.remove();return}
+Array.prototype.slice.call(c.attributes).forEach(function(a){c.removeAttribute(a.name)});
+if(todo)c.className="todo";if(ok){c.type="checkbox";if(chk)c.setAttribute("checked","")}})})(d);return d.innerHTML}
+function toHtml(e){var h=e.b?esc(e.b).replace(/\n/g,"<br>"):"";
+if(e.k&&e.k.length)h+=(h?"<br>":"")+'<ul class="todo">'+e.k.map(function(i){return'<li><input type="checkbox"'+(i.d?' checked':'')+'> '+esc(i.t)+'</li>'}).join("")+'</ul>';return h}
+function tbl(c){var s=getSelection(),n=s.rangeCount&&s.anchorNode;n=n&&(n.nodeType===1?n:n.parentNode);var td=n&&n.closest("td,th");
+if(!td||!$("bd").contains(td)){alert("Pon el cursor dentro de una tabla.");return}
+var t=td.closest("table"),tr=td.parentNode;
+if(c==="delt"){if(confirm("¿Borrar la tabla?"))t.remove();return}
+if(c==="row"){var nr=document.createElement("tr");Array.prototype.forEach.call(tr.children,function(){var x=document.createElement("td");x.innerHTML="&nbsp;";nr.appendChild(x)});tr.parentNode.insertBefore(nr,tr.nextSibling)}
+else{var i=Array.prototype.indexOf.call(tr.children,td);Array.prototype.forEach.call(t.rows,function(r){var x=document.createElement(r.rowIndex?"td":"th");x.innerHTML="&nbsp;";r.insertBefore(x,r.children[i+1]||null)})}}
+$("tb").onmousedown=function(ev){ev.preventDefault()};
+$("tb").onclick=function(ev){var b=ev.target.closest("button");if(!b)return;var c=b.getAttribute("data-c"),x=document.execCommand.bind(document);$("bd").focus();x("styleWithCSS",false,false);
+if(c==="h")x("formatBlock",false,document.queryCommandValue("formatBlock")==="h3"?"p":"h3");
+else if(c==="todo")x("insertHTML",false,'<ul class="todo"><li><input type="checkbox">&nbsp;</li></ul>');
+else if(c==="table"){var r=+prompt("¿Cuántas filas?","3"),k=+prompt("¿Cuántas columnas?","3");
+if(r>0&&k>0&&r<30&&k<10){var t="<table>";for(var i=0;i<r;i++){t+="<tr>";for(var j=0;j<k;j++)t+=(i?"<td>":"<th>")+"&nbsp;"+(i?"</td>":"</th>");t+="</tr>"}x("insertHTML",false,t+"</table><p><br></p>")}}
+else if(c==="row"||c==="col"||c==="delt")tbl(c);
+else x(c)};
+$("bd").onkeyup=function(ev){if(ev.key!=="Enter")return;var n=getSelection().anchorNode,li=n&&(n.nodeType===1?n:n.parentNode).closest("li");
+if(li&&li.parentNode.classList.contains("todo")&&!li.querySelector("input")){var i=document.createElement("input");i.type="checkbox";li.insertBefore(i,li.firstChild)}};
 function kc(e){return TREE[e.cat]?e.cat:"Otros"}
 function fillSub(c,v){var L=TREE[c]||[];$("sc").style.display=L.length?"":"none";$("sc").innerHTML='<option value="">(sin subcategoría)</option>'+L.map(function(x){return'<option>'+esc(x)+'</option>'}).join("");$("sc").value=v||""}
 $("c").onchange=function(){fillSub(this.value,"")};
@@ -182,17 +220,18 @@ $("pe").onclick=function(ev){var p=ev.target.getAttribute("data-p");if(p!==null)
 $("sv").onclick=function(){
 var t=$("t").value.trim();if(!t){$("t").focus();return}
 var g=$("g").value.split(",").map(function(s){return s.trim()}).filter(Boolean);
-var old=editId?get(editId):null,oldK=old&&old.k||[];
-var k=$("k").value.split("\n").map(function(s){return s.trim()}).filter(Boolean).map(function(s){
-var m=oldK.filter(function(i){return i.t===s})[0];return{t:s,d:m?m.d:false}});
+var old=editId?get(editId):null;
 var e=old||{id:"i"+Date.now(),fav:false};
-e.t=t;e.cat=$("c").value;e.sub=$("sc").value;e.g=g;e.b=$("b").value;e.k=k;e.x=$("x").value;e.p=photos;e.u=Date.now();
+Array.prototype.forEach.call($("bd").querySelectorAll("input"),function(i){i.checked?i.setAttribute("checked",""):i.removeAttribute("checked")});
+var hh=clean($("bd").innerHTML);
+e.t=t;e.cat=$("c").value;e.sub=$("sc").value;e.g=g;e.b=$("bd").innerText.trim();e.h=(e.b||/<(table|input)/.test(hh))?hh:"";e.k=[];e.x=$("x").value;e.p=photos;e.u=Date.now();
 if(!old)data.push(e);put(e);show(false);render()};
 
 /* ---------- acciones en tarjetas ---------- */
 $("ls").onclick=function(ev){
 var it=ev.target.closest(".it");if(!it)return;
 var id=it.getAttribute("data-id"),e=get(id),tg=ev.target;
+if(tg.type==="checkbox"&&tg.closest(".rt")){tg.checked?tg.setAttribute("checked",""):tg.removeAttribute("checked");e.h=clean(tg.closest(".rt").innerHTML);put(e);return}
 if(tg.type==="checkbox"){e.k[+tg.getAttribute("data-n")].d=tg.checked;put(e);
 tg.parentNode.classList.toggle("dn",tg.checked);return}
 if(tg.tagName==="IMG"){tg.classList.toggle("big");return}
