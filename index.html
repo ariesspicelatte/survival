@@ -107,7 +107,7 @@ body.red{--sc:#2a0000;--sc2:#3c0000;--sc3:#6a1a1a}
 <path class="as" d="M226 111L196 115" stroke-width="2"/>
 <rect class="sl" x="195" y="111" width="9" height="7" rx="3"/>
 </svg>
-<p class="m" id="sct"></p></div>
+<p class="m" id="sct"></p><button id="gu" style="margin-top:6px">📖 ¿Primera vez? Guía de uso</button></div>
 <div class="r"><select id="so">
 <option value="rec">Más recientes</option>
 <option value="az">A → Z</option>
@@ -146,8 +146,8 @@ body.red{--sc:#2a0000;--sc2:#3c0000;--sc3:#6a1a1a}
 <div class="w" id="pn" style="display:none"><h1 id="pt"></h1><div id="pc"></div><div class="r"><button id="pb">← Volver</button></div></div>
 <div id="pv"></div>
 <script>
-var TREE={"Supervivencia básica":["Agua","Fuego","Refugio","Alimentos","Huerto y semillas","Higiene"],"Salud":["Primeros auxilios","Medicinas","Mente y salud mental"],"Equipo":["Mochila 72 h","Almacén en casa","Energía","Herramientas"],"Información":["Comunicaciones","Mapas y rutas","Meteorología","Contactos"],"Amenazas y planes":["Nuclear","Guerra y conflicto","Guerra híbrida","Ciberataques","Apagones","Desastres naturales","Plan familiar","Evacuación"],"Seguridad y discreción":["Defensa","VPN","Gray man"],"Documentos y dinero":["Lifebook","Efectivo y trueque"],"Bushcraft":["Nudos","Plantas","Rastros","Navegación natural"],"Otros":[]};
-var SRC={"notion":"Notion","compilacion":"Compilación Twitter"};
+var TREE={"Supervivencia básica":["Agua","Fuego","Refugio","Alimentos","Huerto y semillas","Higiene"],"Salud":["Primeros auxilios","Medicinas","Mente y salud mental"],"Equipo":["Mochila 72 h","EDC","Almacén en casa","Energía","Herramientas"],"Información":["Comunicaciones","Mapas y rutas","Meteorología","Contactos"],"Amenazas y planes":["Nuclear","Guerra y conflicto","Guerra híbrida","Ciberataques","Apagones","Desastres naturales","Plan familiar","Evacuación"],"Seguridad y discreción":["Defensa","VPN","Gray man"],"Documentos y dinero":["Lifebook","Efectivo y trueque"],"Bushcraft":["Nudos","Plantas","Rastros","Navegación natural"],"Otros":[]};
+var SRC={"ayuda":"Guía de uso","masterclass":"Masterclass","notion":"Notion","compilacion":"Compilación Twitter"};
 var CATS=Object.keys(TREE);
 var data=[],cat="Todas",sub="",editId=null,photos=[],db=null;
 
@@ -254,7 +254,7 @@ else if(c==="row"||c==="col"||c==="delt")tbl(c);
 else x(c)};
 $("bd").onkeyup=function(ev){if(ev.key!=="Enter")return;var n=getSelection().anchorNode,li=n&&(n.nodeType===1?n:n.parentNode).closest("li");
 if(li&&li.parentNode.classList.contains("todo")&&!li.querySelector("input")){var i=document.createElement("input");i.type="checkbox";li.insertBefore(i,li.firstChild)}};
-var cur=[],VER="7",browse=false;
+var cur=[],VER="8",browse=false;
 function homeView(){var h=!$("q").value.trim()&&cat==="Todas"&&!browse;
 $("scene").style.display=h?"block":"none";
 $("ls").style.display=$("ch").style.display=$("sch").style.display=h?"none":"";
@@ -263,6 +263,7 @@ $("hm").textContent=h?"☰ Explorar por categorías":"← Volver al inicio";
 $("sct").textContent=data.length?"Escribe arriba para buscar entre tus "+data.length+" entradas":"Pulsa «+ Nueva» para crear tu primera entrada";
 $("st").textContent=data.length+" entradas · guardadas en este dispositivo · versión "+VER;
 if(h)cur=data;return h}
+$("gu").onclick=function(){cat="📚 Guías";sub="ayuda";chips();render()};
 $("hm2").onclick=function(){browse=false;cat="Todas";sub="";$("q").value="";chips();render();window.scrollTo(0,0)};
 $("hm").onclick=function(){if(homeView())browse=true;else{browse=false;cat="Todas";sub="";$("q").value=""}chips();render()};
 function lsGet(k){try{return localStorage.getItem(k)}catch(x){return null}}
