@@ -1,4 +1,4 @@
-var C="survival-v4",F=["./","index.html","manifest.json","icon-192.png","icon-512.png","apple-touch-icon.png"];
+var C="survival-v5",F=["./","index.html","manifest.json","icon-192.png","icon-512.png","apple-touch-icon.png"];
 self.addEventListener("install",function(e){e.waitUntil(caches.open(C).then(function(c){return c.addAll(F).then(function(){return c.add("banner.jpg").catch(function(){})})}).then(function(){return self.skipWaiting()}))});
 self.addEventListener("activate",function(e){e.waitUntil(caches.keys().then(function(k){return Promise.all(k.filter(function(n){return n!==C}).map(function(n){return caches.delete(n)}))}).then(function(){return self.clients.claim()}))});
 self.addEventListener("fetch",function(e){e.respondWith(caches.match(e.request).then(function(r){return r||fetch(e.request).then(function(n){if(n.ok){var k=n.clone();caches.open(C).then(function(c){c.put(e.request,k)})}return n})}))});

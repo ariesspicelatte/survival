@@ -32,7 +32,7 @@ label.l{display:block;font-size:13px;color:var(--mu);margin-top:10px}
 .hero{position:relative;min-height:150px;margin-bottom:12px;padding:14px;border-radius:14px;display:flex;align-items:flex-end;color:#fff;background:linear-gradient(#0002,#000b),url(banner.jpg) center/cover,var(--ac)}
 .hero h1{margin:0;text-shadow:0 1px 4px #000a}
 .mn{position:absolute;top:10px;right:10px;width:auto;padding:6px 11px;border:none;border-radius:99px;background:#0007;color:#fff;font-size:18px}
-.mp{display:none;gap:8px;margin-bottom:10px}.mp.on{display:flex}.mp button{flex:1}
+.mp{display:none;gap:8px;margin-bottom:10px}.mp.on{display:flex;flex-wrap:wrap}.mp button{flex:1 1 40%}
 .rt{line-height:1.5}.rt ul,.rt ol{margin:6px 0;padding-left:22px}.rt h3{margin:10px 0 4px;font-size:17px}
 .rt ul.todo{list-style:none;padding-left:2px}.rt ul.todo li{position:relative;padding-left:28px;list-style:none}
 .rt ul.todo input{position:absolute;left:2px;top:3px;width:20px;height:20px}
@@ -42,6 +42,12 @@ label.l{display:block;font-size:13px;color:var(--mu);margin-top:10px}
 .ed{min-height:180px;border:1px solid var(--bd);border-radius:8px;padding:10px;background:var(--card);outline:none}
 .tb{display:flex;gap:6px;overflow-x:auto;padding:6px 0;position:sticky;top:env(safe-area-inset-top,0px);background:var(--bg);z-index:5}
 .tb button{white-space:nowrap;padding:6px 10px;font-size:14px}
+.bk{display:none;background:var(--ac2);border:1px solid var(--bd);border-radius:10px;padding:10px;margin-bottom:10px}.bk button{padding:4px 10px;margin-left:6px}
+body.red{--bg:#000;--card:#120000;--tx:#ff4040;--mu:#b03030;--ac:#a00;--ac2:#240000;--bd:#400;--dn:#f66;--wn:#f84}
+body.red .hero{filter:grayscale(1) sepia(1) hue-rotate(-50deg) saturate(3) brightness(.6)}
+body.big{font-size:20px}body.big .m,body.big .chip,body.big .tb button{font-size:16px}
+#pv{display:none}
+@media print{body.pr>*:not(#pv){display:none!important}body.pr #pv{display:block}body.pr,body.pr.red{--bg:#fff;--card:#fff;--tx:#000;--mu:#444;--bd:#999;--ac2:#eee;background:#fff;color:#000}.pi{break-inside:avoid;margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid #999}.pi h2{margin:0 0 4px}}
 .chip.s{font-size:13px;padding:3px 10px}
 .it{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:12px;margin:8px 0}
 .it h3{margin:0 0 4px;font-size:17px;display:flex;justify-content:space-between;gap:8px}
@@ -59,7 +65,7 @@ label.l{display:block;font-size:13px;color:var(--mu);margin-top:10px}
 .ph img.big{width:100%;height:auto;max-height:70vh;object-fit:contain}
 .pe{position:relative}
 .pe button{position:absolute;top:2px;right:2px;padding:0 7px;border-radius:99px}
-.ac{display:flex;gap:8px;margin-top:10px}
+.ac{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
 .f{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom));border-radius:99px;padding:14px 20px;box-shadow:0 3px 10px #0004}
 #ed{display:none}
 .em{text-align:center;color:var(--mu);padding:30px 10px}
@@ -68,7 +74,8 @@ label.l{display:block;font-size:13px;color:var(--mu);margin-top:10px}
 <body>
 <div class="w" id="lst">
 <div class="hero"><button id="mn" class="mn" aria-label="Menú">⚙</button><h1>🏕️ Base de Supervivencia</h1></div>
-<div class="mp" id="mp"><button id="ex">⬇ Exportar copia</button><button id="im">⬆ Importar copia</button></div>
+<div class="bk" id="bk"></div>
+<div class="mp" id="mp"><button id="ex">⬇ Exportar</button><button id="im">⬆ Importar</button><button id="mc">🛒 Compra</button><button id="mk">🧮 Calculadora</button><button id="mi">🖨 Imprimir lista</button><button id="ml">🔴 Luz roja</button><button id="mz">🔠 Texto grande</button></div>
 <input id="q" type="search" placeholder="Buscar en títulos, notas, listas y etiquetas…">
 <div class="r"><select id="so">
 <option value="rec">Más recientes</option>
@@ -76,6 +83,7 @@ label.l{display:block;font-size:13px;color:var(--mu);margin-top:10px}
 <option value="cat">Por categoría</option>
 <option value="fav">Favoritos primero</option>
 <option value="exp">Caducidad más próxima</option>
+<option value="rev">Revisión más antigua</option>
 </select></div>
 <div class="chips" id="ch"></div>
 <div class="chips" id="sch"></div>
@@ -87,6 +95,7 @@ label.l{display:block;font-size:13px;color:var(--mu);margin-top:10px}
 
 <div class="w" id="ed">
 <h1 id="et">Nueva entrada</h1>
+<select id="tp" style="margin-bottom:8px"></select>
 <input id="t" placeholder="Título (ej. Botiquín de mochila)">
 <label class="l">Categoría</label><select id="c"></select><select id="sc" style="margin-top:6px"></select>
 <label class="l">Etiquetas (separadas por comas)</label><input id="g">
@@ -94,6 +103,7 @@ label.l{display:block;font-size:13px;color:var(--mu);margin-top:10px}
 <div class="tb" id="tb"><button data-c="bold"><b>B</b></button><button data-c="italic"><i>I</i></button><button data-c="underline"><u>U</u></button><button data-c="strikeThrough"><s>S</s></button><button data-c="h">Título</button><button data-c="insertUnorderedList">• Lista</button><button data-c="insertOrderedList">1. Lista</button><button data-c="todo">☑ Tareas</button><button data-c="table">▦ Tabla</button><button data-c="row">+ Fila</button><button data-c="col">+ Col.</button><button data-c="delt">✕ Tabla</button><button data-c="removeFormat">Limpiar</button></div>
 <div id="bd" class="rt ed" contenteditable="true"></div>
 <label class="l">Fecha de caducidad (opcional)</label><input id="x" type="date">
+<label class="l">Inventario (opcional)</label><div class="r"><input id="qy" type="number" min="0" placeholder="Cantidad"><input id="mn2" type="number" min="0" placeholder="Mínimo"></div><input id="lc" placeholder="Ubicación (ej. armario del pasillo)">
 <label class="l">Fotos</label>
 <div class="ph" id="pe"></div>
 <div class="r"><button id="ap">📷 Añadir foto</button></div>
@@ -101,6 +111,8 @@ label.l{display:block;font-size:13px;color:var(--mu);margin-top:10px}
 <div class="r"><button class="p" id="sv">Guardar</button><button id="cn">Cancelar</button></div>
 </div>
 
+<div class="w" id="pn" style="display:none"><h1 id="pt"></h1><div id="pc"></div><div class="r"><button id="pb">← Volver</button></div></div>
+<div id="pv"></div>
 <script>
 var TREE={"Supervivencia básica":["Agua","Fuego","Refugio","Alimentos","Huerto y semillas","Higiene"],"Salud":["Primeros auxilios","Medicinas","Mente y salud mental"],"Equipo":["Mochila 72 h","Almacén en casa","Energía","Herramientas"],"Información":["Comunicaciones","Mapas y rutas","Meteorología","Contactos"],"Amenazas y planes":["Nuclear","Guerra y conflicto","Guerra híbrida","Ciberataques","Apagones","Desastres naturales","Plan familiar","Evacuación"],"Seguridad y discreción":["Defensa","VPN","Gray man"],"Documentos y dinero":["Lifebook","Efectivo y trueque"],"Bushcraft":["Nudos","Plantas","Rastros","Navegación natural"],"Otros":[]};
 var SRC={"notion":"Notion","compilacion":"Compilación Twitter"};
@@ -126,7 +138,7 @@ function get(id){return data.filter(function(e){return e.id===id})[0]}
 /* ---------- lista ---------- */
 function chips(){
 function mk(c,on,a,l){return '<button class="chip'+(on?' on':'')+(a?' s':'')+'" data-'+(a?'s':'c')+'="'+esc(c)+'">'+esc(l||c)+'</button>'}
-$("ch").innerHTML=["Todas","★ Favoritos","⏰ Caducan pronto","📚 Guías"].concat(CATS).map(function(c){return mk(c,c===cat)}).join("");
+$("ch").innerHTML=["Todas","★ Favoritos","⏰ Caducan pronto","📦 Stock bajo","📚 Guías"].concat(CATS).map(function(c){return mk(c,c===cat)}).join("");
 var L=[];
 if(cat==="📚 Guías")L=Object.keys(SRC).map(function(k){return[k,SRC[k]]});
 else if(TREE[cat])L=TREE[cat].map(function(x){return[x,x]});
@@ -136,6 +148,7 @@ var q=norm($("q").value.trim()),so=$("so").value;
 var l=data.filter(function(e){
 if(cat==="★ Favoritos"&&!e.fav)return false;
 if(cat==="⏰ Caducan pronto"){var d=days(e.x);if(d===null||d>30)return false}
+else if(cat==="📦 Stock bajo"){if(!isLow(e))return false}
 else if(cat==="📚 Guías"){if(!e.src||(sub&&e.src!==sub))return false}
 else if(cat!=="Todas"&&cat!=="★ Favoritos"){if(kc(e)!==cat||(sub&&e.sub!==sub))return false}
 if(!q)return true;
@@ -145,31 +158,34 @@ l.sort(function(a,b){
 if(so==="az")return a.t.localeCompare(b.t,"es");
 if(so==="cat")return a.cat.localeCompare(b.cat,"es")||a.t.localeCompare(b.t,"es");
 if(so==="fav")return (b.fav?1:0)-(a.fav?1:0)||b.u-a.u;
+if(so==="rev")return (a.rev||0)-(b.rev||0);
 if(so==="exp"){if(!a.x&&!b.x)return b.u-a.u;if(!a.x)return 1;if(!b.x)return -1;return a.x<b.x?-1:1}
 return b.u-a.u});
+cur=l;
 $("ls").innerHTML=l.length?l.map(function(e){
 var d=days(e.x),ex="";
 if(d!==null)ex=' · <span class="ex'+(d<0?' bad':'')+'">'+(d<0?'⚠ Caducada hace '+(-d)+' d':d===0?'⏰ Caduca hoy':'⏰ Caduca en '+d+' d')+'</span>';
 var k=(e.k||[]),done=k.filter(function(i){return i.d}).length,tt=k.length,dd=done;if(e.h){tt+=(e.h.match(/<input/g)||[]).length;dd+=(e.h.match(/<input[^>]*checked/g)||[]).length}
+var inv=(e.qty!==undefined&&e.qty!==""?" · 📦 "+e.qty+(e.loc?" · "+esc(e.loc):""):(e.loc?" · 📍 "+esc(e.loc):""))+(isLow(e)?' · <span class="ex bad">⚠ Stock bajo</span>':""),rv=e.rev?" · 🔄 revisada hace "+ago(e.rev):"";
 return '<div class="it" data-id="'+e.id+'"><h3><span>'+esc(e.t)+'</span><span>'+(e.fav?'★':'')+'</span></h3>'+
-'<div class="m">'+esc(kc(e))+(e.sub?" › "+esc(e.sub):"")+(e.src?" · 📚 "+esc(SRC[e.src]||e.src):"")+ex+(tt?' · ✔ '+dd+'/'+tt:'')+(e.p&&e.p.length?' · 📷 '+e.p.length:'')+'</div>'+
+'<div class="m">'+esc(kc(e))+(e.sub?" › "+esc(e.sub):"")+(e.src?" · 📚 "+esc(SRC[e.src]||e.src):"")+ex+inv+rv+(tt?' · ✔ '+dd+'/'+tt:'')+(e.p&&e.p.length?' · 📷 '+e.p.length:'')+'</div>'+
 e.g.map(function(t){return '<span class="tg">'+esc(t)+'</span>'}).join("")+
 '<div class="dt">'+(e.h?'<div class="rt">'+clean(e.h)+'</div>':(e.b?'<div class="bd">'+esc(e.b)+'</div>':''))+
 k.map(function(i,n){return '<label class="ck'+(i.d?' dn':'')+'"><input type="checkbox" data-n="'+n+'"'+(i.d?' checked':'')+'><span>'+esc(i.t)+'</span></label>'}).join("")+
 (e.p&&e.p.length?'<div class="ph">'+e.p.map(function(s){return '<img src="'+s+'">'}).join("")+'</div>':'')+
-'<div class="ac"><button data-a="f">'+(e.fav?'Quitar ★':'★ Favorito')+'</button><button data-a="e">Editar</button><button class="d" data-a="x">Borrar</button></div></div></div>'}).join(""):
+'<div class="ac"><button data-a="f">'+(e.fav?'Quitar ★':'★ Favorito')+'</button><button data-a="v">✓ Revisada</button><button data-a="d">Duplicar</button><button data-a="p">🖨 Imprimir</button><button data-a="e">Editar</button><button class="d" data-a="x">Borrar</button></div></div></div>'}).join(""):
 '<div class="em">'+(data.length?'Sin resultados.':'Aún no hay entradas. Pulsa «+ Nueva» para empezar.')+'</div>';
-$("st").textContent=data.length+" entradas · guardadas en este dispositivo"}
+$("st").textContent=data.length+" entradas · guardadas en este dispositivo · versión "+VER}
 
 /* ---------- editor ---------- */
-function show(ed){$("lst").style.display=ed?"none":"block";$("ed").style.display=ed?"block":"none";window.scrollTo(0,0)}
+function show(ed){$("lst").style.display=ed?"none":"block";$("ed").style.display=ed?"block":"none";$("pn").style.display="none";window.scrollTo(0,0)}
 function drawPh(){$("pe").innerHTML=photos.map(function(s,i){return '<div class="pe"><img src="'+s+'"><button data-p="'+i+'">✕</button></div>'}).join("")}
 function openEd(id){
 editId=id;var e=id?get(id):null;
 $("et").textContent=e?"Editar entrada":"Nueva entrada";
 $("t").value=e?e.t:"";$("c").value=e?kc(e):(CATS.indexOf(cat)>-1?cat:CATS[0]);fillSub($("c").value,e?e.sub:(CATS.indexOf(cat)>-1?sub:""));
 $("g").value=e?e.g.join(", "):"";$("bd").innerHTML=e?(e.h?clean(e.h):toHtml(e)):"";
-$("x").value=e&&e.x?e.x:"";photos=e&&e.p?e.p.slice():[];drawPh();show(true)}
+$("x").value=e&&e.x?e.x:"";$("qy").value=e&&e.qty!==undefined?e.qty:"";$("mn2").value=e&&e.min!==undefined?e.min:"";$("lc").value=e&&e.loc?e.loc:"";$("tp").style.display=e?"none":"";$("tp").value="";photos=e&&e.p?e.p.slice():[];drawPh();show(true)}
 function resize(file,cb){
 var r=new FileReader();r.onload=function(){var im=new Image();im.onload=function(){
 var m=1000,s=Math.min(1,m/Math.max(im.width,im.height)),c=document.createElement("canvas");
@@ -205,6 +221,51 @@ else if(c==="row"||c==="col"||c==="delt")tbl(c);
 else x(c)};
 $("bd").onkeyup=function(ev){if(ev.key!=="Enter")return;var n=getSelection().anchorNode,li=n&&(n.nodeType===1?n:n.parentNode).closest("li");
 if(li&&li.parentNode.classList.contains("todo")&&!li.querySelector("input")){var i=document.createElement("input");i.type="checkbox";li.insertBefore(i,li.firstChild)}};
+var cur=[],VER="5";
+function lsGet(k){try{return localStorage.getItem(k)}catch(x){return null}}
+function lsSet(k,v){try{localStorage.setItem(k,v)}catch(x){}}
+function isLow(e){return e.qty!==undefined&&e.qty!==""&&e.min!==undefined&&e.min!==""&&+e.qty<+e.min}
+function ago(t){var d=Math.floor((Date.now()-t)/864e5);return d<1?"hoy":d<60?d+" d":Math.floor(d/30)+" meses"}
+function bkBanner(){var b=$("bk"),l=+lsGet("lastBackup")||0,d=Math.floor((Date.now()-l)/864e5);
+if(!data.length||(l&&d<30)||lsGet("bkHide")===new Date().toDateString()){b.style.display="none";return}
+b.innerHTML="💾 "+(l?"Hace "+d+" días que no exportas una copia.":"Aún no has exportado ninguna copia.")+' <button id="bk1">Exportar</button><button id="bk2">Luego</button>';b.style.display="block"}
+function doExport(){var b=new Blob([JSON.stringify(data)],{type:"application/json"}),n="survival-base-"+new Date().toISOString().slice(0,10)+".json",f;
+try{f=new File([b],n,{type:"application/json"})}catch(x){}
+if(f&&navigator.canShare&&navigator.canShare({files:[f]})){navigator.share({files:[f],title:n}).then(function(){lsSet("lastBackup",Date.now());bkBanner()}).catch(function(){});return}
+var a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=n;a.click();lsSet("lastBackup",Date.now());bkBanner()}
+$("bk").onclick=function(ev){if(ev.target.id==="bk1")doExport();if(ev.target.id==="bk2"){lsSet("bkHide",new Date().toDateString());bkBanner()}};
+$("ex").onclick=doExport;
+function applyMode(){document.body.classList.toggle("red",lsGet("red")==="1");document.body.classList.toggle("big",lsGet("big")==="1")}
+$("ml").onclick=function(){lsSet("red",lsGet("red")==="1"?"0":"1");applyMode()};
+$("mz").onclick=function(){lsSet("big",lsGet("big")==="1"?"0":"1");applyMode()};
+function panel(t,h){$("pt").textContent=t;$("pc").innerHTML=h;$("lst").style.display="none";$("ed").style.display="none";$("pn").style.display="block";window.scrollTo(0,0)}
+$("pb").onclick=function(){show(false);render()};
+function pHtml(e){var k=(e.k||[]).map(function(i){return"<div>"+(i.d?"☑ ":"☐ ")+esc(i.t)+"</div>"}).join("");
+return'<div class="pi"><h2>'+esc(e.t)+'</h2><div class="m">'+esc(kc(e))+(e.sub?" › "+esc(e.sub):"")+'</div>'+(e.h?'<div class="rt">'+clean(e.h)+'</div>':'<div class="bd">'+esc(e.b)+'</div>')+k+'</div>'}
+function printEntries(l){if(!l.length){alert("No hay entradas para imprimir.");return}
+$("pv").innerHTML=l.map(pHtml).join("");document.body.classList.add("pr");setTimeout(function(){window.print()},100)}
+window.onafterprint=function(){document.body.classList.remove("pr");$("pv").innerHTML=""};
+$("mi").onclick=function(){printEntries(cur)};
+function shop(){var out=[];data.forEach(function(e){var it=[];
+if(e.h){var d=new DOMParser().parseFromString("<body>"+clean(e.h)+"</body>","text/html");
+Array.prototype.forEach.call(d.querySelectorAll("ul.todo li"),function(li){var c=li.querySelector("input");if(c&&!c.hasAttribute("checked")){var t=li.textContent.replace(/\u00a0/g," ").trim();if(t)it.push(t)}})}
+(e.k||[]).forEach(function(i){if(!i.d)it.push(i.t)});
+if(isLow(e))it.push("Reponer (tienes "+e.qty+", mínimo "+e.min+")");
+if(it.length)out.push({t:e.t,it:it})});return out}
+$("mc").onclick=function(){var o=shop(),txt=o.map(function(x){return x.t+"\n"+x.it.map(function(i){return"- "+i}).join("\n")}).join("\n\n");
+panel("🛒 Lista de la compra",o.length?o.map(function(x){return'<div class="it"><h3>'+esc(x.t)+'</h3>'+x.it.map(function(i){return'<div>☐ '+esc(i)+'</div>'}).join("")+'</div>'}).join("")+'<div class="r"><button id="cp">Copiar</button><button id="sh">Compartir</button></div>':'<p class="em">No hay nada pendiente 🎉</p>');
+if(o.length){$("cp").onclick=function(){navigator.clipboard&&navigator.clipboard.writeText(txt).then(function(){alert("Copiado")})};
+$("sh").onclick=function(){navigator.share?navigator.share({text:txt}).catch(function(){}):alert("Compartir no está disponible")}}};
+$("mk").onclick=function(){panel("🧮 Calculadora",'<label class="l">Personas</label><input id="c1" type="number" value="2" min="1"><label class="l">Días</label><input id="c2" type="number" value="3" min="1"><label class="l">Agua por persona y día (L)</label><input id="c3" type="number" value="3" step="0.5"><label class="l">Calorías por persona y día</label><input id="c4" type="number" value="2000" step="100"><div class="it" id="cr"></div><p class="m">Valores orientativos: ajústalos según niños, clima, esfuerzo o salud.</p>');
+function u(){var p=+$("c1").value||0,d=+$("c2").value||0,w=+$("c3").value||0,k=+$("c4").value||0;$("cr").innerHTML="💧 Agua: <b>"+(p*d*w).toFixed(1)+" L</b><br>🍽️ Energía: <b>"+(p*d*k).toLocaleString("es")+" kcal</b> en total"}
+["c1","c2","c3","c4"].forEach(function(i){$(i).oninput=u});u()};
+var TPL=[{n:"Botiquín",t:"Botiquín",c:"Salud",s:"Primeros auxilios",l:["Vendas y gasas","Esparadrapo","Antiséptico","Guantes","Tijeras","Pinzas","Analgésicos","Manta térmica","Medicación personal"]},
+{n:"Mochila 72 h",t:"Mochila de 72 horas",c:"Equipo",s:"Mochila 72 h",l:["Agua","Comida","Linterna frontal y pilas","Radio","Botiquín","Documentos","Efectivo","Ropa de abrigo","Mapa","Cargador y batería externa"]},
+{n:"Plan familiar",t:"Plan familiar",c:"Amenazas y planes",s:"Plan familiar",l:["Punto de encuentro 1","Punto de encuentro 2","Contactos clave","Rutas de evacuación","Roles de cada persona","Documentos importantes","Revisar el plan cada 6 meses"]},
+{n:"Revisión mensual",t:"Revisión mensual",c:"Otros",s:"",l:["Caducidades","Pilas y baterías","Agua almacenada","Medicación","Copia de seguridad de la app"]}];
+$("tp").innerHTML='<option value="">Empezar desde una plantilla…</option>'+TPL.map(function(t,i){return'<option value="'+i+'">'+t.n+'</option>'}).join("");
+$("tp").onchange=function(){var t=TPL[this.value];if(!t)return;$("t").value=t.t;$("c").value=t.c;fillSub(t.c,t.s);
+$("bd").innerHTML='<ul class="todo">'+t.l.map(function(x){return'<li><input type="checkbox"> '+x+'</li>'}).join("")+'</ul>'};
 function kc(e){return TREE[e.cat]?e.cat:"Otros"}
 function fillSub(c,v){var L=TREE[c]||[];$("sc").style.display=L.length?"":"none";$("sc").innerHTML='<option value="">(sin subcategoría)</option>'+L.map(function(x){return'<option>'+esc(x)+'</option>'}).join("");$("sc").value=v||""}
 $("c").onchange=function(){fillSub(this.value,"")};
@@ -224,7 +285,7 @@ var old=editId?get(editId):null;
 var e=old||{id:"i"+Date.now(),fav:false};
 Array.prototype.forEach.call($("bd").querySelectorAll("input"),function(i){i.checked?i.setAttribute("checked",""):i.removeAttribute("checked")});
 var hh=clean($("bd").innerHTML);
-e.t=t;e.cat=$("c").value;e.sub=$("sc").value;e.g=g;e.b=$("bd").innerText.trim();e.h=(e.b||/<(table|input)/.test(hh))?hh:"";e.k=[];e.x=$("x").value;e.p=photos;e.u=Date.now();
+e.t=t;e.cat=$("c").value;e.sub=$("sc").value;e.g=g;e.b=$("bd").innerText.trim();e.h=(e.b||/<(table|input)/.test(hh))?hh:"";e.k=[];e.x=$("x").value;e.qty=$("qy").value===""?"":+$("qy").value;e.min=$("mn2").value===""?"":+$("mn2").value;e.loc=$("lc").value.trim();e.p=photos;e.u=Date.now();
 if(!old)data.push(e);put(e);show(false);render()};
 
 /* ---------- acciones en tarjetas ---------- */
@@ -238,14 +299,15 @@ if(tg.tagName==="IMG"){tg.classList.toggle("big");return}
 var a=tg.getAttribute("data-a");
 if(!a){if(!tg.closest(".dt"))it.classList.toggle("o");return}
 if(a==="e")return openEd(id);
+if(a==="p")return printEntries([e]);
+if(a==="v"){e.rev=Date.now();put(e)}
+if(a==="d"){var cp=JSON.parse(JSON.stringify(e));cp.id="i"+Date.now();cp.t+=" (copia)";cp.fav=false;cp.u=Date.now();delete cp.rev;data.push(cp);put(cp)}
 if(a==="f"){e.fav=!e.fav;put(e)}
 if(a==="x"){if(!confirm("¿Borrar esta entrada?"))return;data=data.filter(function(x){return x.id!==id});del(id)}
-render();var n=document.querySelector('[data-id="'+id+'"]');if(n&&a==="f")n.classList.add("o")};
+render();var n=document.querySelector('[data-id="'+id+'"]');if(n&&(a==="f"||a==="v"))n.classList.add("o")};
 
 /* ---------- copia de seguridad ---------- */
-$("ex").onclick=function(){
-var b=new Blob([JSON.stringify(data)],{type:"application/json"}),a=document.createElement("a");
-a.href=URL.createObjectURL(b);a.download="survival-base-"+new Date().toISOString().slice(0,10)+".json";a.click()};
+
 $("im").onclick=function(){$("fi").click()};
 $("fi").onchange=function(){
 var f=this.files[0];if(!f)return;var r=new FileReader();
@@ -259,7 +321,7 @@ catch(x){alert("Archivo no válido.")}};r.readAsText(f);this.value=""};
 
 $("mn").onclick=function(){$("mp").classList.toggle("on")};
 if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").catch(function(){});
-chips();idb(render);
+chips();applyMode();idb(function(){render();bkBanner()});
 </script>
 </body>
 </html>
